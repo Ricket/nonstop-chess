@@ -4,6 +4,7 @@
 var fs = require("fs"),
     http = require("http"),
     path = require("path"),
+    cleanCSS = require("clean-css"),
     uglifyJS = require("uglify-js");
 
 var files = {};
@@ -11,14 +12,16 @@ var files = {};
 ["index.html", "404.html"].forEach(function (filename) {
     files[filename] = {
         type: "text/html",
-        contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename))
+        contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename), { encoding: "utf8" })
     };
 });
 
 ["nonstop-chess.css"].forEach(function (filename) {
     files[filename] = {
         type: "text/css",
-        contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename))
+        contents: cleanCSS.process(
+            fs.readFileSync(path.resolve(__dirname, "../public/" + filename), { encoding: "utf8" }))
+        // contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename), { encoding: "utf8" })
     };
 });
 
@@ -26,7 +29,7 @@ var files = {};
     files[filename] = {
         type: "text/javascript",
         contents: uglifyJS.minify(path.resolve(__dirname, "../public/" + filename)).code
-        // contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename))
+        // contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename), { encoding: "utf8" })
     };
 });
 

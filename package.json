@@ -19,6 +19,7 @@
 		"chess"
 	],
 	"dependencies": {
+		"clean-css": "~1.0.1",
 		"socket.io": "~0.9.14",
 		"uglify-js": "~2.2.5"
 	},
