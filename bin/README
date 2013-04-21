@@ -1,0 +1,7 @@
+This directory contains scripts for convenience. They should be run from within
+the parent directory (the project root), like so:
+
+    $ bin/foo.sh
+
+If they take any parameters, these parameters should be optional and documented
+at the top of the script file.

@@ -1,0 +1,33 @@
+{
+	"name": "nonstop-chess",
+	"private": true,
+	"version": "0.1.0",
+	"author": "Richard Carter <richard@richardcarter.org>",
+	"description": "Chess without turns",
+	"contributors": [
+		{
+			"name": "Richard Carter",
+			"email": "richard@richardcarter.org"
+		}
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Ricket/nonstop-chess.git"
+	},
+	"keywords": [
+		"game",
+		"chess"
+	],
+	"dependencies": {
+		"socket.io": "~0.9.14",
+		"uglify-js": "~2.2.5"
+	},
+	"devDependencies": {
+		"grunt": "~0.4.1",
+		"grunt-contrib-jshint": "~0.4.3",
+		"grunt-contrib-nodeunit": "~0.1.2"
+	},
+	"engines": {
+		"node": "~0.10.4"
+	}
+}
