@@ -2,16 +2,13 @@
 (function (Board, Piece, Movements, Highlighter) {
     "use strict";
 
-    /* GLOBALS */
     var UNIT = 50; // one block/piece size
 
-    /* USER INTERACTION */
     document.onmousedown = function (e) {
         // prevent highlighting the page if user drags or double-clicks
         e.preventDefault();
     };
 
-    /* SETTING UP BOARD AND PIECES */
     var boardView = document.getElementById("chessboard"),
         board = new Board();
 
