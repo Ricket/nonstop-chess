@@ -7,41 +7,43 @@ var fs = require("fs"),
     cleanCSS = require("clean-css"),
     uglifyJS = require("uglify-js");
 
-var files = {};
+var files = {},
+    publicDir = path.resolve(__dirname, "../public");
 
-["index.html", "404.html"].forEach(function (filename) {
+["/index.html", "/404.html"].forEach(function (filename) {
     files[filename] = {
         type: "text/html",
         contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename), { encoding: "utf8" })
     };
 });
 
-["nonstop-chess.css"].forEach(function (filename) {
+["/nonstop-chess.css"].forEach(function (filename) {
     files[filename] = {
         type: "text/css",
         contents: cleanCSS.process(
-            fs.readFileSync(path.resolve(__dirname, "../public/" + filename), { encoding: "utf8" }))
-        // contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename), { encoding: "utf8" })
+            fs.readFileSync(publicDir + filename, { encoding: "utf8" }))
     };
 });
 
-["nonstop-chess.js", "Board.js", "Highlighter.js", "Movements.js", "Piece.js"].forEach(function (filename) {
-    files[filename] = {
-        type: "text/javascript",
-        contents: uglifyJS.minify(path.resolve(__dirname, "../public/" + filename)).code
-        // contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename), { encoding: "utf8" })
-    };
-});
+files["/nonstop-chess.js"] = {
+    type: "text/javascript",
+    contents: uglifyJS.minify([
+        publicDir + "/Movements.js",
+        publicDir + "/Piece.js",
+        publicDir + "/Board.js",
+        publicDir + "/Highlighter.js",
+        publicDir + "/nonstop-chess.js"
+    ]).code
+};
 
 http.createServer(function (req, res) {
-    var url = req.url;
-    if (url == null || url.length <= 1) {
-        url = "/index.html";
+    var reqFile = req.url;
+    if (reqFile == null || reqFile.length <= 1) {
+        reqFile = "/index.html";
     }
 
-    var reqFile = url.substr(1);
     if (!files.hasOwnProperty(reqFile)) {
-        reqFile = "404.html";
+        reqFile = "/404.html";
     }
 
     var file = files[reqFile];
