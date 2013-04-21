@@ -7,10 +7,10 @@ var fs = require("fs"),
     uglifyJS = require("uglify-js");
 
 var files = {
-    "index.html": fs.readFileSync(path.resolve(__dirname, "../client/index.html")),
-    "nonstop-chess.js": uglifyJS.minify(path.resolve(__dirname, "../client/nonstop-chess.js")).code,
-    "nonstop-chess.css": fs.readFileSync(path.resolve(__dirname, "../client/nonstop-chess.css")),
-    "404.html": fs.readFileSync(path.resolve(__dirname, "../client/404.html"))
+    "index.html": fs.readFileSync(path.resolve(__dirname, "../public/index.html")),
+    "nonstop-chess.js": uglifyJS.minify(path.resolve(__dirname, "../public/nonstop-chess.js")).code,
+    "nonstop-chess.css": fs.readFileSync(path.resolve(__dirname, "../public/nonstop-chess.css")),
+    "404.html": fs.readFileSync(path.resolve(__dirname, "../public/404.html"))
 };
 
 http.createServer(function (req, res) {

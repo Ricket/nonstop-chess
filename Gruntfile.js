@@ -12,8 +12,8 @@ module.exports = function (grunt) {
             server: {
                 src: ["src/server/**/*.js", "test/server/**/*.js"]
             },
-            client: {
-                src: ["src/client/**/*.js", "test/client/**/*.js"]
+            public: {
+                src: ["src/public/**/*.js", "test/public/**/*.js"]
             },
             misc: {
                 src: ["Gruntfile.js"]
@@ -21,7 +21,7 @@ module.exports = function (grunt) {
         },
         nodeunit: {
             server: ["test/server/**/*.js"],
-            client: ["test/client/**/*.js"]
+            public: ["test/public/**/*.js"]
         }
     });
 
