@@ -6,12 +6,29 @@ var fs = require("fs"),
     path = require("path"),
     uglifyJS = require("uglify-js");
 
-var files = {
-    "index.html": fs.readFileSync(path.resolve(__dirname, "../public/index.html")),
-    "nonstop-chess.js": uglifyJS.minify(path.resolve(__dirname, "../public/nonstop-chess.js")).code,
-    "nonstop-chess.css": fs.readFileSync(path.resolve(__dirname, "../public/nonstop-chess.css")),
-    "404.html": fs.readFileSync(path.resolve(__dirname, "../public/404.html"))
-};
+var files = {};
+
+["index.html", "404.html"].forEach(function (filename) {
+    files[filename] = {
+        type: "text/html",
+        contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename))
+    };
+});
+
+["nonstop-chess.css"].forEach(function (filename) {
+    files[filename] = {
+        type: "text/css",
+        contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename))
+    };
+});
+
+["nonstop-chess.js", "Board.js", "Highlighter.js", "Movements.js", "Piece.js"].forEach(function (filename) {
+    files[filename] = {
+        type: "text/javascript",
+        contents: uglifyJS.minify(path.resolve(__dirname, "../public/" + filename)).code
+        // contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename))
+    };
+});
 
 http.createServer(function (req, res) {
     var url = req.url;
@@ -20,11 +37,17 @@ http.createServer(function (req, res) {
     }
 
     var reqFile = url.substr(1);
-    if (files.hasOwnProperty(reqFile)) {
-        res.end(files[reqFile], "utf8");
-    } else {
-        res.end(files["404.html"], "utf8");
+    if (!files.hasOwnProperty(reqFile)) {
+        reqFile = "404.html";
     }
+
+    var file = files[reqFile];
+
+    res.writeHead(200, {
+        "Content-Length": file.contents.length,
+        "Content-Type": file.type
+    });
+    res.end(file.contents, "utf8");
 }).listen(7236);
 
 console.log("http://localhost:7236/");
