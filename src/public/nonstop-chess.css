@@ -1,7 +1,28 @@
+#container {
+    position:relative;
+}
 #chessboard {
     position: relative;
     display: inline-block;
     width: 400px;
+}
+#mask, #notice {
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 400px;
+}
+#mask {
+    background-color: #000;
+    opacity: 0.5;
+}
+#notice {
+    padding-top: 100px;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 50px;
+    text-align: center;
 }
 .square {
     float: left;
