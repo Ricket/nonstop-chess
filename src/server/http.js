@@ -1,6 +1,8 @@
 /*jshint node: true*/
 "use strict";
 
+var PORT = 7236;
+
 var fs = require("fs"),
     http = require("http"),
     path = require("path"),
@@ -59,8 +61,8 @@ var httpServer = http.createServer(function (req, res) {
 
 var io = require("socket.io").listen(httpServer);
 
-httpServer.listen(7236);
+httpServer.listen(PORT);
 
 io.sockets.on("connection", require("./socket").onConnection);
 
-console.log("http://localhost:7236/");
+console.log("http://localhost:" + PORT + "/");
