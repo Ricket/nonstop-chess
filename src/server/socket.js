@@ -1,7 +1,7 @@
 /*jshint node: true*/
 "use strict";
 
-var _ = require("lodash");
+// var _ = require("lodash");
 
 var pendingPlayer = null,
     games = {};
