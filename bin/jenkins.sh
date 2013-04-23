@@ -1,3 +1,3 @@
 #!/bin/bash
 
-grunt --no-color jshint nodeunit
+grunt --no-color jshint # nodeunit
