@@ -1,7 +1,7 @@
 /*jshint node: true*/
 "use strict";
 
-var PORT = 7236;
+var PORT = 8000;
 
 var fs = require("fs"),
     http = require("http"),
