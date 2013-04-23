@@ -1,6 +1,7 @@
 // Client-only
 
 /*jshint browser: true*/
+/* global io */
 this.Socket = (function () {
     "use strict";
 
