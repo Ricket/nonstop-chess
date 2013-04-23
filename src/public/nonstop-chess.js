@@ -1,5 +1,5 @@
 /*jshint browser: true*/
-(function (Board, Piece, Movements, Highlighter) {
+(function (Board, Piece, Movements, Highlighter, Notice, Socket) {
     "use strict";
 
     var UNIT = 50; // one block/piece size
@@ -54,7 +54,7 @@
 
         pieceView.onclick = function () {
             var highlightedPiece = Highlighter.getModel();
-            if (highlightedPiece === null) {
+            if (highlightedPiece === null && piece.color === 0) {
                 Highlighter.set(pieceView, piece);
             } else if (highlightedPiece === piece) {
                 Highlighter.clear();
@@ -68,4 +68,18 @@
         };
     });
 
-})(this.Board, this.Piece, this.Movements, this.Highlighter);
+    Socket.connect();
+    Socket.on("error", function () {
+        Notice.show("Error connecting to server.");
+    });
+    Socket.on("connect_failed", function () {
+        Notice.show("Error connecting to server.");
+    });
+    Socket.on("disconnect", function () {
+        Notice.show("Disconnected from server.");
+    });
+    Socket.on("waitingForMatch", function () {
+        Notice.show("Waiting for match...");
+    });
+
+})(this.Board, this.Piece, this.Movements, this.Highlighter, this.Notice, this.Socket);

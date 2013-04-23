@@ -32,11 +32,13 @@ files["/nonstop-chess.js"] = {
         publicDir + "/Piece.js",
         publicDir + "/Board.js",
         publicDir + "/Highlighter.js",
+        publicDir + "/Notice.js",
+        publicDir + "/Socket.js",
         publicDir + "/nonstop-chess.js"
     ]).code
 };
 
-http.createServer(function (req, res) {
+var httpServer = http.createServer(function (req, res) {
     var reqFile = req.url;
     if (reqFile == null || reqFile.length <= 1) {
         reqFile = "/index.html";
@@ -53,6 +55,12 @@ http.createServer(function (req, res) {
         "Content-Type": file.type
     });
     res.end(file.contents, "utf8");
-}).listen(7236);
+});
+
+var io = require("socket.io").listen(httpServer);
+
+httpServer.listen(7236);
+
+io.sockets.on("connection", require("./socket").onConnection);
 
 console.log("http://localhost:7236/");
