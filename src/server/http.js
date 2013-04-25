@@ -12,7 +12,7 @@ var fs = require("fs"),
 var files = {},
     publicDir = path.resolve(__dirname, "../public");
 
-["/index.html", "/404.html"].forEach(function (filename) {
+["/game.html", "/404.html"].forEach(function (filename) {
     files[filename] = {
         type: "text/html",
         contents: fs.readFileSync(path.resolve(__dirname, "../public/" + filename), { encoding: "utf8" })
@@ -43,7 +43,7 @@ files["/nonstop-chess.js"] = {
 var httpServer = http.createServer(function (req, res) {
     var reqFile = req.url;
     if (reqFile == null || reqFile.length <= 1) {
-        reqFile = "/index.html";
+        reqFile = "/game.html";
     }
 
     if (!files.hasOwnProperty(reqFile)) {
