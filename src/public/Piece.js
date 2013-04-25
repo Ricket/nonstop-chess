@@ -2,12 +2,16 @@
 var exports = (function () {
     "use strict";
 
+    var nextId = 0;
+
     function Piece(code) {
+        this.id = nextId++;
         this.code = code;
         this.color = Math.floor(code / 6);
         this.type = code % 6;
         this.movements = 0;
         this.positionChangeListeners = [];
+        this.removeListeners = [];
     }
 
     Piece.COLORS = ["white", "black"];
@@ -16,11 +20,11 @@ var exports = (function () {
     Piece.prototype.hasMoved = function () {
         return this.movements !== 0;
     };
-
+    
     Piece.prototype.onPositionChange = function (callback) {
         this.positionChangeListeners.push(callback);
     };
-
+    
     Piece.prototype.setPosition = function (x, y) {
         var oldX = this.x,
             oldY = this.y;
@@ -29,13 +33,17 @@ var exports = (function () {
         this.positionChangeListeners.forEach(function (listener) {
             listener(oldX, oldY);
         });
-        return this;
     };
 
-    Piece.prototype.moveTo = function (x, y) {
-        this.setPosition(x, y);
-        this.movements += 1;
+    Piece.prototype.onRemove = function (callback) {
+        this.removeListeners.push(callback);
     };
+
+    Piece.prototype.remove = function () {
+        this.isRemoved = true;
+        this.removeListeners.forEach(function (listener) {
+            listener();
+        });
 
     return Piece;
 

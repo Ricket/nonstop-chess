@@ -45,7 +45,12 @@
     line-height: 1em;
     text-align: center;
     overflow: hidden;
-    cursor: pointer;
+}
+.piece.white {
+    cursor:pointer;
+}
+.piece.black {
+    cursor:crosshair;
 }
 .piece.highlighted {
     background-color: #990;

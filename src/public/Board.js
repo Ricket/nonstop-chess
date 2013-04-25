@@ -47,6 +47,11 @@ var exports = (function (Movements) {
         return Movements.isValid(piece.code, x - piece.x, y - piece.y, !piece.hasMoved()) &&
             (piece.type === 4 || !this.arePiecesBetween(piece.x, piece.y, x, y));
     };
+    
+    Board.prototype.move = function (piece, x, y) {
+        piece.setPosition(x, y);
+        piece.movements += 1;
+    };
 
     Board.prototype.canMoveToCapture = function (captor, captive) {
         if (captor.color === captive.color) {
@@ -63,13 +68,13 @@ var exports = (function (Movements) {
     };
 
     Board.prototype.capture = function (captor, captive) {
-        if (!this.canMoveToCapture(captor, captive)) {
-            return false;
-        } else {
-            captor.moveTo(captive.x, captive.y);
-            this.pieces[captive.y * 8 + captive.x] = null;
-            return true;
-        }
+        this.remove(captive);
+        this.move(captor, captive.x, captive.y);
+    };
+
+    Board.prototype.remove = function (piece) {
+        this.pieces[piece.y * 8 + piece.x] = null;
+        piece.remove();
     };
 
     return Board;

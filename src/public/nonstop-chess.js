@@ -22,7 +22,8 @@
         square.onclick = function () {
             var highlightedPiece = Highlighter.getModel();
             if (highlightedPiece !== null && board.canMove(highlightedPiece, x, y)) {
-                highlightedPiece.moveTo(x, y);
+                Socket.emit("positionChange", { oldx: highlightedPiece.x, oldy: highlightedPiece.y, x: x, y: y });
+                board.move(highlightedPiece, x, y);
                 Highlighter.clear();
             }
         };
@@ -50,22 +51,31 @@
             pieceView.style.top = (piece.y * UNIT) + "px";
         });
 
-        piece.setPosition(idx % 8, Math.floor(idx / 8) + 4 * Math.floor(idx / 16));
+        piece.onRemove(function () {
+            pieceView.parentNode.removeChild(pieceView);
+        });
 
         pieceView.onclick = function () {
             var highlightedPiece = Highlighter.getModel();
-            if (highlightedPiece === null && piece.color === 0) {
-                Highlighter.set(pieceView, piece);
-            } else if (highlightedPiece === piece) {
-                Highlighter.clear();
-            } else if (board.capture(highlightedPiece, piece)) {
-                pieceView.parentNode.removeChild(pieceView);
-                Highlighter.clear();
+            if (highlightedPiece === null) {
+                if (piece.color === 0) {
+                    Highlighter.set(pieceView, piece);
+                }
             } else {
-                Highlighter.set(pieceView, piece);
+                if (highlightedPiece === piece) {
+                    Highlighter.clear();
+                } else if (board.canMoveToCapture(highlightedPiece, piece)) {
+                    Socket.emit("capture", { captorx: highlightedPiece.x, captory: highlightedPiece.y, x: piece.x, y: piece.y });
+                    board.capture(highlightedPiece, piece);
+                    Highlighter.clear();
+                } else if (piece.color === 0) {
+                    Highlighter.set(pieceView, piece);
+                } // else they've clicked a distant black piece
             }
             return false;
         };
+
+        piece.setPosition(idx % 8, Math.floor(idx / 8) + 4 * Math.floor(idx / 16));
     });
 
     Socket.connect();
@@ -80,6 +90,33 @@
     });
     Socket.on("waitingForMatch", function () {
         Notice.show("Waiting for match...");
+    });
+    Socket.on("getReady", function () {
+        // TODO add button that sends the ready notification
+        Socket.emit("ready");
+        Notice.show("Get ready!");
+    });
+    Socket.on("start", function () {
+        Notice.hide();
+    });
+    Socket.on("halt", function () {
+        Notice.show("Your opponent left. Please refresh.");
+        Socket.disconnect();
+    });
+    Socket.on("positionChange", function (data) {
+        console.log("positionChange", data);
+        var piece = board.getPieceAt(data.oldx, data.oldy);
+        if (piece != null && piece.color === 1) {
+            board.move(piece, data.x, data.y);
+        }
+    });
+    Socket.on("capture", function (data) {
+        console.log("capture", data);
+        var captor = board.getPieceAt(data.captorx, data.captory);
+        var captive = board.getPieceAt(data.x, data.y);
+        if (captor != null && captive != null && captor.color === 1 && captive.color === 0) {
+            board.capture(captor, captive);
+        }
     });
 
 })(this.Board, this.Piece, this.Movements, this.Highlighter, this.Notice, this.Socket);
