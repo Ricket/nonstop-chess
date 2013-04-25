@@ -23,8 +23,7 @@
         square.onclick = function () {
             var highlightedPiece = Highlighter.getModel();
             if (highlightedPiece !== null && board.canMove(highlightedPiece, x, y)) {
-                Socket.emit("positionChange", { oldx: highlightedPiece.x, oldy: highlightedPiece.y, x: x, y: y });
-                board.move(highlightedPiece, x, y);
+                Socket.emit("move", { oldx: highlightedPiece.x, oldy: highlightedPiece.y, x: x, y: y });
                 Highlighter.clear();
             }
         };
@@ -68,7 +67,6 @@
                 } else if (board.canMoveToCapture(highlightedPiece, piece)) {
                     Socket.emit("capture",
                             { captorx: highlightedPiece.x, captory: highlightedPiece.y, x: piece.x, y: piece.y });
-                    board.capture(highlightedPiece, piece);
                     Highlighter.clear();
                 } else if (piece.color === 0) {
                     Highlighter.set(pieceView, piece);
@@ -88,7 +86,9 @@
         Notice.show("Error connecting to server.");
     });
     Socket.on("disconnect", function () {
-        Notice.show("Disconnected from server.");
+        if (!Notice.isVisible()) {
+            Notice.show("Disconnected from server.");
+        }
     });
     Socket.on("waitingForMatch", function () {
         Notice.show("Waiting for match...");
@@ -105,10 +105,10 @@
         Notice.show("Your opponent left. Please refresh.");
         Socket.disconnect();
     });
-    Socket.on("positionChange", function (data) {
-        console.log("positionChange", data);
+    Socket.on("move", function (data) {
+        console.log("move", data);
         var piece = board.getPieceAt(data.oldx, data.oldy);
-        if (piece != null && piece.color === 1) {
+        if (piece != null) {
             board.move(piece, data.x, data.y);
         }
     });
@@ -116,7 +116,7 @@
         console.log("capture", data);
         var captor = board.getPieceAt(data.captorx, data.captory);
         var captive = board.getPieceAt(data.x, data.y);
-        if (captor != null && captive != null && captor.color === 1 && captive.color === 0) {
+        if (captor != null && captive != null) {
             board.capture(captor, captive);
         }
     });

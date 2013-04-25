@@ -68,21 +68,24 @@ function stopGame(gameId) {
     }
 }
 
-function getOpponent(socket, callback) {
+function getGame(socket, callback) {
     socket.get("gameId", function (err, gameId) {
         if (err) {
             callback(err, null);
         } else {
-            var game = games[gameId];
-            if (socket.id === game.player1.id) {
-                callback(null, game.player2);
-            } else if (socket.id === game.player2.id) {
-                callback(null, game.player1);
-            } else {
-                callback("Not found in game", null);
-            }
+            callback(null, games[gameId]);
         }
     });
+}
+
+function getOpponent(socket, game) {
+    if (socket.id === game.player1.id) {
+        return game.player2;
+    } else if (socket.id === game.player2.id) {
+        return game.player1;
+    } else {
+        throw new Error("Opponent not found");
+    }
 }
 
 exports.onConnection = function (socket) {
@@ -110,10 +113,12 @@ exports.onConnection = function (socket) {
         playerReady(socket);
     });
 
-    socket.on("positionChange", function (data) {
-        console.log("positionChange", require("util").inspect(data));
-        getOpponent(socket, function (err, opponent) {
-            opponent.emit("positionChange", {
+    socket.on("move", function (data) {
+        console.log("move", require("util").inspect(data));
+        socket.emit("move", data);
+        getGame(socket, function (err, game) {
+            var opponent = getOpponent(socket, game);
+            opponent.emit("move", {
                 oldx: (7 - parseInt(data.oldx, 10)),
                 oldy: (7 - parseInt(data.oldy, 10)),
                 x: (7 - parseInt(data.x, 10)),
@@ -122,7 +127,9 @@ exports.onConnection = function (socket) {
         });
     });
     socket.on("capture", function (data) {
-        getOpponent(socket, function (err, opponent) {
+        socket.emit("capture", data);
+        getGame(socket, function (err, game) {
+            var opponent = getOpponent(socket, game);
             opponent.emit("capture", {
                 captorx: (7 - parseInt(data.captorx, 10)),
                 captory: (7 - parseInt(data.captory, 10)),
