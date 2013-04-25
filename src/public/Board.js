@@ -79,7 +79,7 @@ var exports = (function (Movements) {
 
     return Board;
 
-})(typeof require !== "undefined" ? require("Movements") : this.Movements);
+})(typeof require !== "undefined" ? require("./Movements") : this.Movements);
 
 if (typeof module !== "undefined") {
     module.exports = exports;

@@ -1,7 +1,9 @@
 /*jshint node: true*/
 "use strict";
 
-var _ = require("lodash");
+var _ = require("lodash"),
+    Board = require("../public/Board"),
+    Piece = require("../public/Piece");
 
 var pendingPlayer = null,
     games = {};
@@ -21,9 +23,19 @@ function startNewGame(socket1, socket2) {
         "player1": socket1,
         "player1Ready": false,
         "player2": socket2,
-        "player2Ready": false
+        "player2Ready": false,
+        "board": new Board()
     };
     games[newId] = game;
+
+    [8, 10, 9, 7, 6, 9, 10, 8,
+     11, 11, 11, 11, 11, 11, 11, 11,
+     5, 5, 5, 5, 5, 5, 5, 5,
+     2, 4, 3, 1, 0, 3, 4, 2].forEach(function (code, idx) {
+        var piece = new Piece(code);
+        game.board.add(piece);
+        piece.setPosition(idx % 8, Math.floor(idx / 8) + 4 * Math.floor(idx / 16));
+    });
 
     var sendGetReady = _.after(2, function () {
         socket1.emit("getReady");
@@ -78,6 +90,16 @@ function getGame(socket, callback) {
     });
 }
 
+function getPlayerNumber(socket, game) {
+    if (socket.id === game.player1.id) {
+        return 1;
+    } else if (socket.id === game.player2.id) {
+        return 2;
+    } else {
+        throw new Error("Player not found");
+    }
+}
+
 function getOpponent(socket, game) {
     if (socket.id === game.player1.id) {
         return game.player2;
@@ -115,27 +137,44 @@ exports.onConnection = function (socket) {
 
     socket.on("move", function (data) {
         console.log("move", require("util").inspect(data));
-        socket.emit("move", data);
         getGame(socket, function (err, game) {
-            var opponent = getOpponent(socket, game);
-            opponent.emit("move", {
-                oldx: (7 - parseInt(data.oldx, 10)),
-                oldy: (7 - parseInt(data.oldy, 10)),
-                x: (7 - parseInt(data.x, 10)),
-                y: (7 - parseInt(data.y, 10))
-            });
+            var oppositeData = {
+                oldx: data.oldx,
+                oldy: (7 - data.oldy),
+                x: data.x,
+                y: (7 - data.y)
+            };
+            var serverData = (getPlayerNumber(socket, game) === 1) ? data : oppositeData;
+
+            var piece = game.board.getPieceAt(serverData.oldx, serverData.oldy);
+
+            if (piece != null) {
+                game.board.move(piece, serverData.x, serverData.y);
+                socket.emit("move", data);
+                var opponent = getOpponent(socket, game);
+                opponent.emit("move", oppositeData);
+            }
         });
     });
     socket.on("capture", function (data) {
-        socket.emit("capture", data);
         getGame(socket, function (err, game) {
-            var opponent = getOpponent(socket, game);
-            opponent.emit("capture", {
-                captorx: (7 - parseInt(data.captorx, 10)),
-                captory: (7 - parseInt(data.captory, 10)),
-                x: (7 - parseInt(data.x, 10)),
-                y: (7 - parseInt(data.y, 10))
-            });
+            var oppositeData = {
+                captorx: data.captorx,
+                captory: (7 - data.captory),
+                x: data.x,
+                y: (7 - data.y)
+            };
+            var serverData = (getPlayerNumber(socket, game) === 1) ? data : oppositeData;
+
+            var captor = game.board.getPieceAt(serverData.captorx, serverData.captory),
+                captive = game.board.getPieceAt(serverData.x, serverData.y);
+
+            if (captor != null && captive != null) {
+                game.board.capture(captor, captive);
+                socket.emit("capture", data);
+                var opponent = getOpponent(socket, game);
+                opponent.emit("capture", oppositeData);
+            }
         });
     });
 };
