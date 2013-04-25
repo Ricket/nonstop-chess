@@ -10,4 +10,4 @@ Each of your pieces has a two-letter combination (a bigram) next to it. This is 
 
 ### The Technology ###
 
-With the power of HTML5, you can play Nonstop Chess right in your web browser! No plugins or downloads.
+With the power of HTML, you can play Nonstop Chess right in your web browser! No plugins or downloads.
