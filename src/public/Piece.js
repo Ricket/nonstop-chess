@@ -5,7 +5,7 @@ var exports = (function () {
     var nextId = 0;
 
     function Piece(code) {
-        this.id = nextId++;
+        this.id = nextId += 1;
         this.code = code;
         this.color = Math.floor(code / 6);
         this.type = code % 6;
@@ -20,11 +20,11 @@ var exports = (function () {
     Piece.prototype.hasMoved = function () {
         return this.movements !== 0;
     };
-    
+
     Piece.prototype.onPositionChange = function (callback) {
         this.positionChangeListeners.push(callback);
     };
-    
+
     Piece.prototype.setPosition = function (x, y) {
         var oldX = this.x,
             oldY = this.y;
@@ -44,6 +44,7 @@ var exports = (function () {
         this.removeListeners.forEach(function (listener) {
             listener();
         });
+    };
 
     return Piece;
 

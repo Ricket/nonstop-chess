@@ -47,7 +47,7 @@ var exports = (function (Movements) {
         return Movements.isValid(piece.code, x - piece.x, y - piece.y, !piece.hasMoved()) &&
             (piece.type === 4 || !this.arePiecesBetween(piece.x, piece.y, x, y));
     };
-    
+
     Board.prototype.move = function (piece, x, y) {
         piece.setPosition(x, y);
         piece.movements += 1;

@@ -1,4 +1,5 @@
 /*jshint browser: true*/
+/* global console */
 (function (Board, Piece, Movements, Highlighter, Notice, Socket) {
     "use strict";
 
@@ -65,7 +66,8 @@
                 if (highlightedPiece === piece) {
                     Highlighter.clear();
                 } else if (board.canMoveToCapture(highlightedPiece, piece)) {
-                    Socket.emit("capture", { captorx: highlightedPiece.x, captory: highlightedPiece.y, x: piece.x, y: piece.y });
+                    Socket.emit("capture",
+                            { captorx: highlightedPiece.x, captory: highlightedPiece.y, x: piece.x, y: piece.y });
                     board.capture(highlightedPiece, piece);
                     Highlighter.clear();
                 } else if (piece.color === 0) {
