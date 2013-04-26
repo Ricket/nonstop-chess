@@ -1,3 +1,10 @@
+#topbuttoncontainer, #bottombuttoncontainer {
+    width: 400px;
+    text-align:center;
+}
+#bottombutton {
+    display:none;
+}
 #container {
     position:relative;
 }

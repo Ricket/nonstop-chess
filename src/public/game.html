@@ -6,10 +6,17 @@
     <link rel="stylesheet" href="nonstop-chess.css">
 </head>
 <body>
+    <div id="topbuttoncontainer">
+        <div>&uarr; Share the link with a friend!</div>
+        <input type="button" id="topbutton" value="Click to allow random strangers"/>
+    </div>
     <div id="container">
         <div id="chessboard"></div>
         <div id="mask"></div>
         <div id="notice">Connecting to server...</div>
+    </div>
+    <div id="bottombuttoncontainer">
+        <input type="button" id="bottombutton" value="Sit down"/>
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="nonstop-chess.js"></script>
