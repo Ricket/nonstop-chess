@@ -60,7 +60,7 @@ function playerReady(socket) {
         } else if (game.player2.id === socket.id) {
             game.player2Ready = true;
         } else {
-            console.log("playerReady fault, neither player");
+            console.error("playerReady fault, neither player");
             return;
         }
 
@@ -136,7 +136,6 @@ exports.onConnection = function (socket) {
     });
 
     socket.on("move", function (data) {
-        console.log("move", require("util").inspect(data));
         getGame(socket, function (err, game) {
             var oppositeData = {
                 oldx: data.oldx,
