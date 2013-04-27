@@ -19,9 +19,9 @@
   "trailing": true,
 
   "maxparams": false,
-  "maxdepth": 4,
-  "maxstatements": 50,
-  "maxcomplexity": 20,
+  "maxdepth": 2,
+  "maxstatements": 17,
+  "maxcomplexity": 6,
   "maxlen": 120,
 
   "asi": false,
